@@ -33,7 +33,6 @@ serve. Claude was only used to build it.
 
 ## Run it locally
 ```bash
-cd site
 python -m http.server 8000
 # open http://localhost:8000
 ```
@@ -52,28 +51,30 @@ bond priced at par (modified duration ≈ 7.72), and a hand-computed DCF case.
 ## Go live
 1. Push this repo to GitHub (public). **No secrets to configure — there are
    none.**
-2. Settings → Pages → deploy from `main` → `/site`.
+2. Settings → Pages → deploy from `main` → `/` (root).
 
-That's the whole deployment. No workflow file, because there's nothing to
-automate.
+That's the whole deployment: no workflow file, because there's nothing to
+automate. (GitHub Pages' branch-deploy source only supports `/` or `/docs`,
+never an arbitrary subfolder — so unlike its siblings, Abacus's site lives at
+the repo root rather than in `site/`, which keeps this a plain branch deploy
+instead of needing an Actions-based one.)
 
 ## Structure
 ```
-docs/    → the executable plan
-site/    → GitHub Pages root
-  ├── index.html      ← six tabs: DCF, Comps, Options, Bonds, WACC/CAPM, SIP
-  ├── css/styles.css  ← warm old-money theme (matches Meridian/MarketPulse/Ledger)
-  ├── js/finmath.js   ← every formula, as pure functions — no DOM, fully testable
-  ├── js/app.js       ← UI wiring, charts, URL-param state for the DCF tab
-  └── favicon.svg
-tests/   → node:test suite asserting finmath.js against known benchmarks
+docs/            → the executable plan (planning doc, not the website)
+index.html       → six tabs: DCF, Comps, Options, Bonds, WACC/CAPM, SIP
+css/styles.css   → warm old-money theme (matches Meridian/MarketPulse/Ledger)
+js/finmath.js    → every formula, as pure functions — no DOM, fully testable
+js/app.js        → UI wiring, charts, URL-param state for the DCF tab
+favicon.svg
+tests/           → node:test suite asserting finmath.js against known benchmarks
 ```
 
 ## Adding a new calculator
 This is the suite's merge target: a new small calculator idea becomes a new
 tab here, not a new repo. Add the formulas as pure functions to
-`site/js/finmath.js`, benchmark-test them in `tests/`, then add a tab panel
-and wire it up in `app.js`.
+`js/finmath.js`, benchmark-test them in `tests/`, then add a tab panel and
+wire it up in `js/app.js`.
 
 ⚠️ Personal, educational tool — not investment advice, not a solicitation,
 not SEBI-registered research. Every calculator states its own simplifying

@@ -3,7 +3,7 @@
 // test runner + assert module only).
 import test from "node:test";
 import assert from "node:assert/strict";
-import * as fm from "../site/js/finmath.js";
+import * as fm from "../js/finmath.js";
 
 const close = (actual, expected, tol, msg) =>
   assert.ok(Math.abs(actual - expected) <= tol,

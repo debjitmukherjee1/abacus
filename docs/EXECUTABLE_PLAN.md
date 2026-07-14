@@ -46,7 +46,7 @@ except static-file bandwidth GitHub already gives away for free.
 
 ```
         ┌───────────────────────────────────────────┐
-        │  site/js/finmath.js                        │
+        │  js/finmath.js                             │
         │  pure functions, no DOM: DCF, comps,        │
         │  BSM + greeks, bond math, CAPM/WACC, SIP    │
         └───────────────────┬─────────────┬──────────┘
@@ -54,20 +54,29 @@ except static-file bandwidth GitHub already gives away for free.
                   imported by │             │ imported by
                              ▼             ▼
         ┌────────────────────────┐  ┌──────────────────────────┐
-        │  site/js/app.js         │  │  tests/finmath.test.mjs  │
+        │  js/app.js               │  │  tests/finmath.test.mjs  │
         │  DOM wiring, Chart.js,   │  │  node:test benchmarks     │
         │  URL-param state (DCF)  │  │  vs. known textbook values│
         └────────────────────────┘  └──────────────────────────┘
                              │
                              ▼
         ┌───────────────────────────────────────────┐
-        │  GitHub Pages (static, free) serves site/  │
+        │  GitHub Pages (static, free), plain branch │
+        │  deploy from main → / — no Actions workflow │
         └───────────────────────────────────────────┘
 ```
 
 The split matters: `finmath.js` never touches `document` or `window`, so the
 exact code path a visitor's browser runs is the same code path the test
 suite asserts against — not a re-implementation of it.
+
+The site lives at the **repo root**, not in a `site/` folder like its
+siblings: GitHub Pages' plain branch-deploy source only accepts `/` or
+`/docs`, never an arbitrary subfolder. Meridian/MarketPulse/Ledger get
+around that with an Actions workflow (`upload-pages-artifact` +
+`deploy-pages`) that deploys their `site/` folder — but Abacus's whole point
+is needing zero Actions, so it takes the plain-branch-deploy path instead,
+which means the site has to be at the root.
 
 ---
 
@@ -90,10 +99,10 @@ math here ignores credit risk entirely. None of this is investment advice.
 
 ## 5. Build phases
 
-- **Phase 0 — scaffold:** `site/js/finmath.js` (every formula, pure) + `tests/finmath.test.mjs` (benchmarks vs. known values). All tests pass before anything else is built.
+- **Phase 0 — scaffold:** `js/finmath.js` (every formula, pure) + `tests/finmath.test.mjs` (benchmarks vs. known values). All tests pass before anything else is built.
 - **Phase 1 — UI:** `index.html` + `css/styles.css` (matched to the sibling theme) + `js/app.js` (six tab panels, Chart.js visuals, URL-param state for DCF).
 - **Phase 2 — self-review:** re-derive each formula against a standard reference (Hull for BSM, Fabozzi for bond convexity, Damodaran for the FCFF reinvestment-rate form), verify the URL round-trips a full scenario, and check the theme against MarketPulse side by side.
-- **Phase 3 — ship:** public repo, GitHub Pages from `main` → `/site`. No workflow file — there is nothing to automate.
+- **Phase 3 — ship:** public repo, GitHub Pages from `main` → `/` (root). No workflow file — there is nothing to automate.
 - **Phase 4 — grow:** new calculator ideas become new tabs here (formulas in `finmath.js`, benchmark tests in `tests/`, a panel in `index.html`, wiring in `app.js`) instead of new repos.
 
 ---
@@ -102,13 +111,12 @@ math here ignores credit risk entirely. None of this is investment advice.
 
 ```
 abacus/
-├── docs/EXECUTABLE_PLAN.md      ← this file
-├── site/                        ← GitHub Pages root
-│   ├── index.html               ← 6 tabs: DCF, Comps, Options, Bonds, WACC/CAPM, SIP
-│   ├── css/styles.css           ← warm old-money theme (matches Meridian/MarketPulse/Ledger)
-│   ├── js/finmath.js            ← every formula, pure functions, no DOM
-│   ├── js/app.js                ← DOM wiring, Chart.js, URL-param state for the DCF tab
-│   └── favicon.svg
+├── docs/EXECUTABLE_PLAN.md      ← this file (planning doc, not the website)
+├── index.html                   ← 6 tabs: DCF, Comps, Options, Bonds, WACC/CAPM, SIP
+├── css/styles.css               ← warm old-money theme (matches Meridian/MarketPulse/Ledger)
+├── js/finmath.js                ← every formula, pure functions, no DOM
+├── js/app.js                    ← DOM wiring, Chart.js, URL-param state for the DCF tab
+├── favicon.svg
 ├── tests/finmath.test.mjs       ← node:test benchmarks vs. known values (29 assertions)
 ├── package.json                 ← test-runner metadata only, zero dependencies
 ├── LICENSE                      ← MIT
@@ -116,8 +124,8 @@ abacus/
 ```
 
 No `pipeline/`, no `.github/workflows/`, no `data/`. Nothing to run before
-serving `site/` — open `site/index.html` (or `python -m http.server` from
-`site/`) and every calculator works immediately.
+serving the site — open `index.html` directly (or `python -m http.server`
+from the repo root) and every calculator works immediately.
 
 ---
 
