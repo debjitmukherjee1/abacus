@@ -1,0 +1,9 @@
+{
+  "name": "abacus",
+  "private": true,
+  "type": "module",
+  "description": "Test-runner metadata only — the site itself is plain HTML/CSS/JS with zero dependencies and zero build step.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

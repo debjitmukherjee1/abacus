@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abacus — The Analyst's Toolkit</title>
+  <meta name="description" content="Six professional finance calculators — DCF, comps, options (Black-Scholes), bond math, WACC/CAPM, and compounding/SIP — computed live in your browser. No server, no data, no keys." />
+  <meta property="og:title" content="Abacus — The Analyst's Toolkit" />
+  <meta property="og:description" content="DCF, comps, options pricing, bond math, WACC/CAPM and SIP/compounding — six calculators, computed live in your browser." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://debjitmukherjee1.github.io/abacus/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Abacus — The Analyst's Toolkit" />
+  <meta name="twitter:description" content="DCF, comps, options pricing, bond math, WACC/CAPM and SIP/compounding — six calculators, computed live in your browser." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+          integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="monogram" viewBox="0 0 48 48" width="46" height="46" aria-hidden="true">
+        <circle cx="24" cy="24" r="22" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5" />
+        <line x1="12" y1="16" x2="36" y2="16" stroke="var(--accent-soft)" stroke-width="1.6" stroke-linecap="round" />
+        <line x1="12" y1="24" x2="36" y2="24" stroke="var(--accent-soft)" stroke-width="1.6" stroke-linecap="round" />
+        <line x1="12" y1="32" x2="36" y2="32" stroke="var(--accent-soft)" stroke-width="1.6" stroke-linecap="round" />
+        <circle cx="19" cy="16" r="3.1" fill="var(--accent)" />
+        <circle cx="27" cy="24" r="3.1" fill="var(--accent)" />
+        <circle cx="21" cy="32" r="3.1" fill="var(--accent)" />
+      </svg>
+      <div class="brand-text">
+        <h1>Aba<span class="pulse">cus</span></h1>
+        <p class="tagline">The analyst's toolkit — six calculators, computed live in your browser.</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="run-note">$0/day · runs entirely client-side · no server, no data pipeline</div>
+    </div>
+  </header>
+
+  <div class="disclaimer-banner">
+    <span class="warn-icon">⚠</span>
+    <span><strong>Personal, educational tool — not investment advice, not a solicitation, not SEBI-registered research.</strong> Every calculator states its own assumptions inline.</span>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <span class="tab-indicator" id="tab-indicator"></span>
+    <button class="tab active" id="tab-btn-dcf" data-tab="dcf" role="tab" aria-selected="true" aria-controls="dcf">DCF</button>
+    <button class="tab" id="tab-btn-comps" data-tab="comps" role="tab" aria-selected="false" aria-controls="comps">Comps</button>
+    <button class="tab" id="tab-btn-options" data-tab="options" role="tab" aria-selected="false" aria-controls="options">Options</button>
+    <button class="tab" id="tab-btn-bonds" data-tab="bonds" role="tab" aria-selected="false" aria-controls="bonds">Bonds</button>
+    <button class="tab" id="tab-btn-wacc" data-tab="wacc" role="tab" aria-selected="false" aria-controls="wacc">WACC / CAPM</button>
+    <button class="tab" id="tab-btn-sip" data-tab="sip" role="tab" aria-selected="false" aria-controls="sip">Compounding &amp; SIP</button>
+  </nav>
+  <select class="tab-select" id="tab-select" aria-label="Choose a calculator">
+    <option value="dcf">DCF Builder</option>
+    <option value="comps">Comps Builder</option>
+    <option value="options">Options Pricer</option>
+    <option value="bonds">Bond Math</option>
+    <option value="wacc">WACC / CAPM</option>
+    <option value="sip">Compounding &amp; SIP</option>
+  </select>
+
+  <main>
+    <!-- ======================= DCF ======================= -->
+    <section id="dcf" class="panel active" role="tabpanel" aria-labelledby="tab-btn-dcf">
+      <h2>DCF Builder</h2>
+      <hr class="rule" />
+      <p class="muted">Two-stage discounted cash flow: revenue growth and operating margin each move in a straight line from a Year-1 value to a Year-N value, cash flow is reinvestment-adjusted NOPAT, and the terminal value uses Gordon growth off the final forecast year. <strong>Unlevered free cash flow only — no explicit working-capital or D&amp;A/capex detail, no probability weighting.</strong> The full scenario is encoded in the URL, so any link you copy reproduces this exact model.</p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Inputs</h3>
+          <div class="field-grid">
+            <div class="field"><label for="dcf-revenue0">Base revenue</label><input type="number" id="dcf-revenue0" value="1000" min="0" step="1"></div>
+            <div class="field"><label for="dcf-years">Forecast years</label><input type="number" id="dcf-years" value="5" min="3" max="10" step="1"></div>
+            <div class="field"><label for="dcf-g0">Growth, Year 1 (%)</label><input type="number" id="dcf-g0" value="12" step="0.1"></div>
+            <div class="field"><label for="dcf-gn">Growth, Year N (%)</label><input type="number" id="dcf-gn" value="6" step="0.1"></div>
+            <div class="field"><label for="dcf-m0">Op. margin, Year 1 (%)</label><input type="number" id="dcf-m0" value="18" step="0.1"></div>
+            <div class="field"><label for="dcf-mn">Op. margin, Year N (%)</label><input type="number" id="dcf-mn" value="22" step="0.1"></div>
+            <div class="field"><label for="dcf-tax">Tax rate (%)</label><input type="number" id="dcf-tax" value="25" step="0.1"></div>
+            <div class="field"><label for="dcf-reinvest">Reinvestment (% of NOPAT)</label><input type="number" id="dcf-reinvest" value="35" step="0.1"></div>
+            <div class="field"><label for="dcf-wacc">WACC (%)</label><input type="number" id="dcf-wacc" value="9.5" step="0.1"></div>
+            <div class="field"><label for="dcf-tg">Terminal growth (%)</label><input type="number" id="dcf-tg" value="3" step="0.1"></div>
+            <div class="field"><label for="dcf-netdebt">Net debt</label><input type="number" id="dcf-netdebt" value="150" step="1"></div>
+            <div class="field"><label for="dcf-shares">Shares outstanding (mn)</label><input type="number" id="dcf-shares" value="100" step="0.1"></div>
+          </div>
+          <button class="btn btn-small" id="dcf-copy-link">Copy shareable link</button>
+          <span class="link-copied" id="dcf-copy-confirm" aria-live="polite">Copied!</span>
+        </div>
+
+        <div class="result-card">
+          <h3>Intrinsic value</h3>
+          <div class="result-hero-label">Value per share</div>
+          <div class="result-hero"><span id="dcf-value-per-share">—</span></div>
+          <div class="stat-row" id="dcf-stats"></div>
+          <div class="football-field-wrap">
+            <div class="chart-title-sm">Football field — value/share across the sensitivity grid</div>
+            <div class="chart-canvas-wrap chart-canvas-wrap--short"><canvas id="dcf-football-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">WACC × Terminal Growth Sensitivity</div></div>
+        <div class="table-scroll"><table class="heatmap-table" id="dcf-heatmap"></table></div>
+        <p class="muted small">Value per share, in whatever unit you entered base revenue in. Rows: WACC. Columns: terminal growth. Blank cells mean terminal growth ≥ WACC (undefined under Gordon growth).</p>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">Cash Flow Build</div></div>
+        <div class="table-scroll"><table class="data-table" id="dcf-cf-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ======================= COMPS ======================= -->
+    <section id="comps" class="panel" role="tabpanel" aria-labelledby="tab-btn-comps">
+      <h2>Comps Builder</h2>
+      <hr class="rule" />
+      <p class="muted">Enter 3–8 peers with trading multiples. Abacus computes the median and quartile range of each multiple, converts it to an implied value per share for your target, and blends that against an intrinsic estimate. <strong>EV/EBITDA implied values net out the target's own net debt to reach equity value; P/E and P/B multiply straight through to a price.</strong></p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Target metrics</h3>
+          <div class="field-grid">
+            <div class="field"><label for="comps-eps">EPS</label><input type="number" id="comps-eps" value="25" step="0.01"></div>
+            <div class="field"><label for="comps-ebitda">EBITDA</label><input type="number" id="comps-ebitda" value="500" step="1"></div>
+            <div class="field"><label for="comps-bvps">Book value / share</label><input type="number" id="comps-bvps" value="150" step="0.1"></div>
+            <div class="field"><label for="comps-netdebt">Net debt</label><input type="number" id="comps-netdebt" value="200" step="1"></div>
+            <div class="field"><label for="comps-shares">Shares outstanding (mn)</label><input type="number" id="comps-shares" value="100" step="0.1"></div>
+            <div class="field"><label for="comps-intrinsic">Intrinsic value / share</label><input type="number" id="comps-intrinsic" value="140" step="0.01"></div>
+          </div>
+          <button class="btn btn-small btn-secondary" id="comps-use-dcf">Use DCF value per share</button>
+
+          <h3 class="mt">Peers <span class="muted small">(3–8)</span></h3>
+          <div class="table-scroll"><table class="peer-table" id="comps-peer-table"></table></div>
+          <div class="peer-actions">
+            <button class="btn btn-small" id="comps-add-peer">+ Add peer</button>
+          </div>
+
+          <div class="field mt">
+            <label for="comps-blend">Blend weight — <span id="comps-blend-label">70% intrinsic / 30% comps</span></label>
+            <input type="range" id="comps-blend" min="0" max="100" value="70">
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>Implied value</h3>
+          <div class="result-hero-label">Blended value per share</div>
+          <div class="result-hero"><span id="comps-blended-value">—</span></div>
+          <div class="stat-row" id="comps-stats"></div>
+          <div class="football-field-wrap">
+            <div class="chart-title-sm">Football field — implied value per share by method</div>
+            <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="comps-football-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= OPTIONS ======================= -->
+    <section id="options" class="panel" role="tabpanel" aria-labelledby="tab-btn-options">
+      <h2>Options Pricer</h2>
+      <hr class="rule" />
+      <p class="muted">Black-Scholes-Merton with a continuous dividend yield — set <strong>q = 0</strong> for the plain non-dividend case. <strong>European exercise only</strong>: no early-exercise premium, no discrete cash dividends, no volatility smile/skew. Volatility and rate are flat, single numbers for the life of the option.</p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Inputs</h3>
+          <div class="field mt" style="margin-bottom:1rem">
+            <label>Type</label>
+            <div class="toggle-group" id="opt-type-toggle">
+              <button type="button" data-value="call" class="active">Call</button>
+              <button type="button" data-value="put">Put</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label for="opt-s">Spot (S)</label><input type="number" id="opt-s" value="100" step="0.01"></div>
+            <div class="field"><label for="opt-k">Strike (K)</label><input type="number" id="opt-k" value="100" step="0.01"></div>
+            <div class="field"><label for="opt-r">Risk-free rate (%)</label><input type="number" id="opt-r" value="5" step="0.01"></div>
+            <div class="field"><label for="opt-q">Dividend yield (%)</label><input type="number" id="opt-q" value="0" step="0.01"></div>
+            <div class="field"><label for="opt-sigma">Volatility σ (%)</label><input type="number" id="opt-sigma" value="20" step="0.01"></div>
+            <div class="field"><label for="opt-t">Time to expiry (yrs)</label><input type="number" id="opt-t" value="1" step="0.01"></div>
+          </div>
+
+          <h3 class="mt">Implied volatility solver</h3>
+          <div class="field-grid">
+            <div class="field"><label for="opt-iv-price">Market price</label><input type="number" id="opt-iv-price" step="0.01" placeholder="e.g. 10.45"></div>
+          </div>
+          <button class="btn btn-small btn-secondary" id="opt-solve-iv">Solve for IV</button>
+          <span class="muted small" id="opt-iv-result"></span>
+        </div>
+
+        <div class="result-card">
+          <h3>Price &amp; Greeks</h3>
+          <div class="result-hero-label">Option price</div>
+          <div class="result-hero"><span id="opt-price">—</span></div>
+          <div class="greeks-grid" id="opt-greeks"></div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">Payoff Diagram</div></div>
+        <div class="legend">
+          <span><span class="swatch" style="border-top-style:solid;border-top-color:var(--accent)"></span>Value today (time value included)</span>
+          <span><span class="swatch" style="border-top-style:solid;border-top-color:var(--bear)"></span>Payoff at expiry (intrinsic only)</span>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="opt-payoff-chart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ======================= BONDS ======================= -->
+    <section id="bonds" class="panel" role="tabpanel" aria-labelledby="tab-btn-bonds">
+      <h2>Bond Math</h2>
+      <hr class="rule" />
+      <p class="muted">Fixed-coupon bond valuation off a single flat discount rate applied to every cash flow. <strong>No credit-spread curve, no OAS, no embedded options (call/put), no default risk.</strong> Accrued interest uses whatever elapsed-period fraction you enter — compute it Actual/Actual or 30/360, your choice, and it flows straight through.</p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Inputs</h3>
+          <div class="field mt" style="margin-bottom:1rem">
+            <label>Solve for</label>
+            <div class="toggle-group" id="bond-solve-toggle">
+              <button type="button" data-value="price" class="active">Price, given yield</button>
+              <button type="button" data-value="yield">Yield, given price</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label for="bond-face">Face value</label><input type="number" id="bond-face" value="100" step="1"></div>
+            <div class="field"><label for="bond-coupon">Coupon rate (%)</label><input type="number" id="bond-coupon" value="5" step="0.01"></div>
+            <div class="field"><label for="bond-freq">Coupons / year</label>
+              <select id="bond-freq">
+                <option value="1">Annual (1)</option>
+                <option value="2" selected>Semiannual (2)</option>
+                <option value="4">Quarterly (4)</option>
+              </select>
+            </div>
+            <div class="field"><label for="bond-years">Years to maturity</label><input type="number" id="bond-years" value="10" step="0.25"></div>
+            <div class="field" id="bond-yield-field"><label for="bond-yield">Yield to maturity (%)</label><input type="number" id="bond-yield" value="5" step="0.01"></div>
+            <div class="field" id="bond-price-field" style="display:none"><label for="bond-price">Price</label><input type="number" id="bond-price" value="100" step="0.01"></div>
+            <div class="field"><label for="bond-elapsed">Coupon period elapsed (%)</label><input type="number" id="bond-elapsed" value="50" step="1"></div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>Valuation</h3>
+          <div class="result-hero-label" id="bond-headline-label">Clean price</div>
+          <div class="result-hero"><span id="bond-headline">—</span></div>
+          <div class="stat-row" id="bond-stats"></div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">Price-Yield Curve</div></div>
+        <div class="chart-canvas-wrap"><canvas id="bond-pyc-chart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ======================= WACC / CAPM ======================= -->
+    <section id="wacc" class="panel" role="tabpanel" aria-labelledby="tab-btn-wacc">
+      <h2>WACC / CAPM</h2>
+      <hr class="rule" />
+      <p class="muted">Cost of equity via CAPM (R<sub>f</sub> + β × ERP), after-tax cost of debt, blended by market-value weights of equity and debt. <strong>Single flat pre-tax cost of debt — no tranche-by-tranche schedule, no preferred-equity layer.</strong></p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Inputs</h3>
+          <div class="field-grid">
+            <div class="field"><label for="wacc-rf">Risk-free rate (%)</label><input type="number" id="wacc-rf" value="6.5" step="0.01"></div>
+            <div class="field"><label for="wacc-beta">Beta</label><input type="number" id="wacc-beta" value="1.1" step="0.01"></div>
+            <div class="field"><label for="wacc-erp">Equity risk premium (%)</label><input type="number" id="wacc-erp" value="6" step="0.01"></div>
+            <div class="field"><label for="wacc-kd">Pre-tax cost of debt (%)</label><input type="number" id="wacc-kd" value="8" step="0.01"></div>
+            <div class="field"><label for="wacc-tax">Tax rate (%)</label><input type="number" id="wacc-tax" value="25" step="0.01"></div>
+            <div class="field"><label for="wacc-equity">Market value of equity</label><input type="number" id="wacc-equity" value="8000" step="1"></div>
+            <div class="field"><label for="wacc-debt">Market value of debt</label><input type="number" id="wacc-debt" value="2000" step="1"></div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>WACC</h3>
+          <div class="result-hero-label">Weighted average cost of capital</div>
+          <div class="result-hero"><span id="wacc-result">—</span></div>
+          <div class="stat-row" id="wacc-stats"></div>
+          <button class="btn mt" id="wacc-send-dcf">Send WACC to DCF →</button>
+          <span class="link-copied" id="wacc-send-confirm">Sent — check the DCF tab</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= COMPOUNDING & SIP ======================= -->
+    <section id="sip" class="panel" role="tabpanel" aria-labelledby="tab-btn-sip">
+      <h2>Compounding &amp; SIP</h2>
+      <hr class="rule" />
+      <p class="muted">The lump sum compounds annually at your entered rate; the SIP assumes a fixed contribution invested at the <strong>start</strong> of each month (annuity-due). <strong>"Real" mode discounts the nominal rate by inflation via the Fisher equation and compounds on that basis — a simplification that implicitly assumes contributions rise with prices too, not a rigorous real-terms cash-flow model.</strong></p>
+
+      <div class="calc-layout">
+        <div class="input-card">
+          <h3>Inputs</h3>
+          <div class="field-grid">
+            <div class="field"><label for="sip-currency">Currency</label>
+              <select id="sip-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option></select>
+            </div>
+            <div class="field"><label for="sip-lump">Lump sum today</label><input type="number" id="sip-lump" value="100000" step="100"></div>
+            <div class="field"><label for="sip-monthly">Monthly SIP</label><input type="number" id="sip-monthly" value="10000" step="100"></div>
+            <div class="field"><label for="sip-rate">Expected annual return (%)</label><input type="number" id="sip-rate" value="12" step="0.1"></div>
+            <div class="field"><label for="sip-years">Years</label><input type="number" id="sip-years" value="15" step="1"></div>
+            <div class="field"><label for="sip-inflation">Inflation (%)</label><input type="number" id="sip-inflation" value="5" step="0.1"></div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Show</label>
+            <div class="toggle-group" id="sip-real-toggle">
+              <button type="button" data-value="nominal" class="active">Nominal</button>
+              <button type="button" data-value="real">Real (today's money)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>Projected value</h3>
+          <div class="result-hero-label" id="sip-fv-label">Nominal value at year N</div>
+          <div class="result-hero"><span id="sip-fv">—</span></div>
+          <div class="stat-row" id="sip-stats"></div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">Growth Curve</div></div>
+        <div class="chart-canvas-wrap"><canvas id="sip-growth-chart"></canvas></div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-head"><div class="chart-title">Goal Seek</div></div>
+        <p class="muted">What monthly SIP reaches a target amount by a target year?</p>
+        <div class="field-grid">
+          <div class="field"><label for="sip-goal-target">Target amount</label><input type="number" id="sip-goal-target" value="10000000" step="1000"></div>
+          <div class="field"><label for="sip-goal-years">Target year (from now)</label><input type="number" id="sip-goal-years" value="15" step="1"></div>
+        </div>
+        <div class="result-hero-label">Required monthly SIP</div>
+        <div class="result-hero result-hero--sm"><span id="sip-goal-result">—</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Abacus · built by Debjit Mukherjee · <a href="https://github.com/debjitmukherjee1/abacus" target="_blank" rel="noopener">Source on GitHub</a><br>
+    Six calculators, zero data, zero server calls — every number is computed by your own browser. Hosting: GitHub Pages.</p>
+    <p class="sibling-links">Also in this suite:
+      <a href="https://debjitmukherjee1.github.io/meridian/" target="_blank" rel="noopener">Meridian</a> ·
+      <a href="https://debjitmukherjee1.github.io/marketpulse/" target="_blank" rel="noopener">MarketPulse</a> ·
+      <a href="https://debjitmukherjee1.github.io/ledger/" target="_blank" rel="noopener">Ledger</a>
+    </p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
