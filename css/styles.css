@@ -319,10 +319,10 @@ table.data-table, table.heatmap-table, table.peer-table { font-size: 13.5px; fon
 .heatmap-table th, .heatmap-table td { border-color: rgba(255,255,255,.06); padding: 10px 12px; }
 .heatmap-table td { color: var(--ink); }
 .heatmap-table td.base-case { border: 1.5px solid var(--ink); font-weight: 500; }
-.peer-table input { min-height: 34px; border: 1px solid transparent; background: transparent; font: 400 13.5px/1 var(--mono); color: var(--ink); border-radius: 8px; }
-.peer-table input[data-field="name"] { font-family: var(--sans); }
-.peer-table input:hover { border-color: rgba(255,255,255,.14); }
-.peer-table input:focus { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.4); box-shadow: none; }
+table.peer-table input { min-height: 34px; border: 1px solid transparent; background: transparent; font: 400 13.5px/1 var(--mono); color: var(--ink); border-radius: 8px; }
+table.peer-table input[data-field="name"] { font-family: var(--sans); }
+table.peer-table input:hover { border-color: rgba(255,255,255,.14); }
+table.peer-table input:focus { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.4); box-shadow: none; }
 .peer-remove { width: 30px; height: 30px; border-radius: 50%; }
 .greeks-grid { gap: 0; border-top-color: var(--line); padding-top: 0; }
 .greeks-grid .stat { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line); }
@@ -343,3 +343,4 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; background: var
 .greeks-grid { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
 .greeks-grid .stat .stat-value { font-size: 22px !important; overflow-wrap: anywhere; }
 .greeks-grid .stat .stat-label { font-size: 12px !important; letter-spacing: .06em !important; }
+.input-card * + h3, .result-card * + h3 { margin-top: 30px; }
