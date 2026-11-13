@@ -6,20 +6,20 @@ import * as fm from "./finmath.js";
 // canvas, so it can't read var(--accent) etc. directly; these are kept in
 // sync by hand.
 const COLORS = {
-  ink: "#2b241a",
-  inkDim: "#6b6153",
-  accent: "#9c6b2e",
-  accentSoft: "#c99a4f",
-  accentWash: "rgba(156,107,46,.18)",
-  bull: "#266b43",
-  bear: "#963527",
-  line: "#ddd0b3",
-  lineSoft: "#e7dcc2",
-  surface: "#faf6ec",
+  ink: "#f3f3f1",
+  inkDim: "#a8aab0",
+  accent: "#f3f3f1",
+  accentSoft: "#a8aab0",
+  accentWash: "rgba(243,243,241,.18)",
+  bull: "#3ddc97",
+  bear: "#ff6a4a",
+  line: "rgba(255,255,255,.14)",
+  lineSoft: "rgba(255,255,255,.07)",
+  surface: "#0f0f11",
 };
 
 if (window.Chart) {
-  Chart.defaults.font.family = "'EB Garamond', Georgia, serif";
+  Chart.defaults.font.family = '"Geist Mono", ui-monospace, monospace';
   Chart.defaults.color = COLORS.inkDim;
   Chart.defaults.borderColor = COLORS.lineSoft;
 }
@@ -205,7 +205,7 @@ function renderDCFHeatmap(sensitivity) {
       } else {
         const t = max > min ? (v - min) / (max - min) : 0.5;
         const alpha = (0.06 + t * 0.55).toFixed(2);
-        html += `<td class="${isBase ? "base-case" : ""}" style="background:rgba(156,107,46,${alpha})">${fmt(v, 1)}</td>`;
+        html += `<td class="${isBase ? "base-case" : ""}" style="background:rgba(243,243,241,${(alpha * 0.4).toFixed(3)})">${fmt(v, 1)}</td>`;
       }
     });
     html += "</tr>";
@@ -622,7 +622,7 @@ function drawSIPGrowthChart(s, rate) {
   if (charts["sip-growth-chart"]) charts["sip-growth-chart"].destroy();
   charts["sip-growth-chart"] = new Chart(ctx, {
     type: "line",
-    data: { datasets: [{ label: "Portfolio value", data: points, borderColor: COLORS.bull, backgroundColor: "rgba(38,107,67,.10)", fill: true, borderWidth: 2, pointRadius: 0, tension: 0.15, parsing: false }] },
+    data: { datasets: [{ label: "Portfolio value", data: points, borderColor: COLORS.bull, backgroundColor: "rgba(61,220,151,.10)", fill: true, borderWidth: 2, pointRadius: 0, tension: 0.15, parsing: false }] },
     options: {
       responsive: true,
       maintainAspectRatio: false,
